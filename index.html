@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dir Browser</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+body {
+    background: #000;
+    margin: 0;
+    font-family: "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 200;
+    font-size: 14px;
+}
+
+.image {
+    background: no-repeat center/contain #141414;
+    color: #fff;
+    height: 15vw;
+    position: relative;
+    width: 24%;
+    display: inline-block;
+    clear: both;
+}
+
+.image:nth-child(2n+1) {
+    background-color: #181818;
+}
+
+.image p {
+    background: rgba(0, 0, 0, .6);
+    bottom: 0;
+    box-sizing: border-box;
+    left: 0;
+    margin: 0;
+    padding: 5px;
+    position: absolute;
+    text-shadow: 0 1px 1px #000;
+    width: 100%;
+    font-family: "Open Sans Regular", "Helvetica Neue", "Lucida Grande", sans-serif;
+}
+
+#gallery {
+    margin: 1.5vw auto;
+}
+
+#dir_input {
+    width: 100%;
+}
+    </style>
+</head>
+
+<body>
+    <input type="text" id="dir_input" name="dir_input" value="http://localhost:2086/"><br>
+    <div id="gallery"></div>
+    <p id="dir"></p>
+    <script>
+        function loadVisible() {
+            let top = $(document).scrollTop(), bottom = top + $(window).height();
+            let gallery = $('#gallery > div');
+            for (let i = 0; i < gallery.length; i++) {
+                let div = gallery.eq(i);
+                let y1 = div.position().top, y2 = y1 + div.height();
+                if (y1 > bottom || y2 < top) {
+                    div.css('background-image', '');
+                    continue;
+                }
+                div.css('background-image', 'url(' + div.data('image') + ')');
+            }
+        }
+        $(window).scroll(loadVisible);
+        $("#dir_input").on('keyup', function (e) {
+            if (e.key === 'Enter') {
+                $("#dir").text("");
+                let url = $("#dir_input").val();
+                $.get(url, function( data ) {
+                    $("#dir").html(data).hide();
+                    $( "#dir li a" ).each(function( index ) {
+                        let filename = $(this).text();
+                        if (filename.endsWith(".png") || filename.endsWith(".jpg")) {
+                            let path = url + "/" + filename;
+                            $('<div class="image">')
+                                .data('image', path)
+                                .append($('<p>').text(filename))
+                                .appendTo('#gallery');
+                        }
+                    });
+                    loadVisible();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
