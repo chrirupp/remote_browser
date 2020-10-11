@@ -12,56 +12,5 @@ function loadVisible() {
     }
 }
 
-function isImage(filename) {
-    const exts = [".png", ".jpg", ".jpeg", ".gif", ".tiff"];
-    for (let e of exts) {
-        if (filename.endsWith(e))
-            return true;
-    }
-    return false;
-}
-
-function loadUrl(url) {
-    $('#gallery').empty();
-    $('#dir').empty();
-    let basePath = url.pathname;
-    let searchParams = new URLSearchParams();
-    searchParams.append("host", url.host);
-    searchParams.append("port", url.port);
-    $.get(url.href, function (data) {
-        $("#dir").html(data);
-        $("#dir li a").each(function (index) {
-            let filename = $(this).text();
-            if (filename.endsWith("/")) {
-                // this is a directory - change link
-                searchParams.set("path", basePath + filename);
-                $(this).attr("href", "?"+searchParams.toString());
-            } else if (isImage(filename)) {
-                let path = url + "/" + filename;
-                $(this).parent().hide();
-                $('<div class="image">')
-                    .data('image', path)
-                    .append($('<p>').text(filename))
-                    .appendTo('#gallery');
-            } else {
-                $(this).attr("href", url.href+filename);
-            }
-        });
-        loadVisible();
-    });
-}
-
-function getUrlParam(urlParams, name, default_value) {
-    if (urlParams.has(name))
-        return urlParams.get(name);
-    return default_value;
-}
-
 $(window).scroll(loadVisible);
-const urlParams = new URLSearchParams(window.location.search);
-let url = new URL("http://dummy/");
-url.host = getUrlParam(urlParams, "host", "localhost");
-url.port = getUrlParam(urlParams, "port", 8000);
-url.pathname = getUrlParam(urlParams, "path", "/");
-
-loadUrl(url);
+loadVisible();
