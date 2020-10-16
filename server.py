@@ -3,6 +3,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import sys
 import os
 import io
+import re
 import urllib.parse
 import html
 
@@ -50,7 +51,13 @@ class GalleryRequestHandler(SimpleHTTPRequestHandler):
         except OSError:
             self.send_error(HTTPStatus.NOT_FOUND, "No permission to list directory")
             return None
-        list.sort(key=lambda a: a.lower())
+
+        def atoi(text):
+            return int(text) if text.isdigit() else text
+
+        def natural_keys(text):
+            return [atoi(c) for c in re.split(r'(\d+)', text.lower())]
+        list.sort(key=natural_keys)
 
         try:
             display_path = urllib.parse.unquote(self.path, errors='surrogatepass')
@@ -73,8 +80,7 @@ class GalleryRequestHandler(SimpleHTTPRequestHandler):
                 display_name = name + "@"
             if os.path.isfile(fullname) and self._is_image(fullname):
                 gallery_listing.append(self._make_image(link_name, display_name))
-            else:
-                dir_listing.append(self._make_file(link_name, display_name))
+            dir_listing.append(self._make_file(link_name, display_name))
         dir_listing.append("</ul>")
         dir_listing = '\n'.join(dir_listing)
         gallery_listing = '\n'.join(gallery_listing)
