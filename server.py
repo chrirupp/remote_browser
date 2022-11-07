@@ -38,7 +38,7 @@ class GalleryRequestHandler(SimpleHTTPRequestHandler):
     @staticmethod
     def _make_image(link_name, display_name):
         ln, dn = GalleryRequestHandler._escape_file(link_name, display_name)
-        return f'<div class="image" data-image="{ln}"><p>{dn}</p></div>'
+        return f'<div class="image" data-image="{ln}"><p><a href="{ln}">{dn}<a></p></div>'
 
     @staticmethod
     def _make_file(link_name, display_name):
@@ -68,6 +68,8 @@ class GalleryRequestHandler(SimpleHTTPRequestHandler):
         title = f'Directory listing for {display_path}'
 
         dir_listing = ["<ul>"]
+        if len(display_path) > 1:
+            dir_listing.append(self._make_file(os.path.dirname(display_path[:-1]), "../"))
         gallery_listing = []
         for name in list:
             fullname = os.path.join(path, name)

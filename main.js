@@ -12,5 +12,12 @@ function loadVisible() {
     }
 }
 
+function updateColumns(event) {
+    $(".image").css("width", `${Math.floor(100/event.target.value)-1}%`);
+    loadVisible();
+}
+
 $(window).scroll(loadVisible);
+$('#numColumns').change(updateColumns);
+
 loadVisible();

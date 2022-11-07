@@ -34,6 +34,10 @@ body {
     font-family: "Open Sans Regular", "Helvetica Neue", "Lucida Grande", sans-serif;
 }
 
+.image p a {
+    color: rgba(255, 255, 255, 1);
+}
+
 #gallery {
     margin: 1.5vw auto;
     float: left;
